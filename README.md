@@ -2,6 +2,10 @@
 
 Convert a Koharu 0.83.x chapter folder into an editable `.khr` project for Koharu 0.84 or 0.85. For example, the migrator reads `Chapter 01.khrproj` and saves a separate file named `Chapter 01 (migrated).khr`. It carries over scans, page order, text, translations, groups, and paint layers. Text can wrap differently in the newer editor.
 
+## Download for Windows
+
+Download the **Windows x64 ZIP** under **Assets**, right-click it, choose **Extract All**, and open **Start Koharu Migrator.exe**. The release page includes checksums and the GitHub Actions build log. [Get the latest Windows release](https://github.com/roorem10/koharu-project-migrator/releases/latest).
+
 ## Use it in your browser
 
 1. On the GitHub repository page, choose **Code → Download ZIP** and extract it.
