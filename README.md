@@ -2,17 +2,23 @@
 
 Convert a Koharu 0.83.x chapter folder into an editable `.khr` project for Koharu 0.84 or 0.85. For example, the migrator reads `Chapter 01.khrproj` and saves a separate file named `Chapter 01 (migrated).khr`. It carries over scans, page order, text, translations, groups, and paint layers. Text can wrap differently in the newer editor.
 
-## Download for Windows
+## Downloads
 
-Download the **Windows x64 ZIP** under **Assets**, right-click it, choose **Extract All**, and open **Start Koharu Migrator.exe**. The release page includes checksums and the GitHub Actions build log. [Get the latest Windows release](https://github.com/roorem10/koharu-project-migrator/releases/latest).
+| Edition | Download | How to open it |
+| --- | --- | --- |
+| Browser | [Standalone HTML file](https://github.com/roorem10/koharu-project-migrator/releases/download/v1.0.0/Koharu-Project-Migrator.html) | Open the downloaded file in desktop Edge or Chrome. It runs locally. |
+| Windows x64 | [Portable Windows ZIP](https://github.com/roorem10/koharu-project-migrator/releases/download/v1.0.0/Koharu-Project-Migrator-v1.0.0-windows-x64.zip) | Right-click the ZIP, choose **Extract All**, then open **Start Koharu Migrator.exe**. |
+
+Checksums and the Windows build log are on the [v1.0.0 release page](https://github.com/roorem10/koharu-project-migrator/releases/tag/v1.0.0).
+
+<img src="docs/koharu-project-migrator.png" alt="Koharu Project Migrator showing the project scan buttons and the folder selector for converted chapters" width="680">
 
 ## Use it in your browser
 
-1. On the GitHub repository page, choose **Code → Download ZIP** and extract it.
-2. Inside the extracted folder, open `release/Koharu-Project-Migrator.html` in desktop Edge or Chrome. This copy runs locally and includes everything needed for conversion.
-3. Close the chapter in the old Koharu. Click **Scan Documents** and choose the folder containing your chapters, or select one `.khrproj` folder.
-4. Click **Convert** next to the chapter. Choose the newer Koharu installation’s `projects` folder when prompted. For a manual save, choose **Download manually** before converting, then click **Download .khr** and move the file into `projects`. On Windows the usual location is `%LOCALAPPDATA%\Koharu\projects`.
-5. Open or reopen the newer Koharu and select the chapter ending in **(migrated)**.
+1. Open the downloaded `Koharu-Project-Migrator.html` in desktop Edge or Chrome.
+2. Close the chapter in the old Koharu. Click **Scan Documents** and choose the folder containing your chapters, or select one `.khrproj` folder.
+3. Click **Convert** next to the chapter. Choose the newer Koharu installation’s `projects` folder when prompted. For a manual save, choose **Download manually** before converting, then click **Download .khr** and move the file into `projects`. On Windows the usual location is `%LOCALAPPDATA%\Koharu\projects`.
+4. Open or reopen the newer Koharu and select the chapter ending in **(migrated)**.
 
 ## How the Windows launcher works
 

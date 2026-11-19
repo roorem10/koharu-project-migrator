@@ -74,7 +74,7 @@ jobs:
           overwrite: true
 
   publish:
-    name: Publish the ZIP to GitHub Releases
+    name: Publish the Windows and browser downloads
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
@@ -93,7 +93,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           archive="Koharu-Project-Migrator-$TAG-windows-x64.zip"
+          browser="Koharu-Project-Migrator.html"
+          browser_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$TAG/$browser"
+          browser_help="[Download the standalone HTML file]($browser_url) and open it in desktop Edge or Chrome."
           (cd dist && sha256sum --check --ignore-missing SHA256SUMS.txt)
+          unzip -p "dist/$archive" "Extras/$browser" > "dist/$browser"
 
           cat > "$RUNNER_TEMP/notes.md" <<EOF
           Convert Koharu 0.83.x chapters into editable projects for Koharu 0.84 or 0.85. The migrator saves a separate copy of each chapter.
@@ -102,16 +106,27 @@ jobs:
           2. Close the chapter in the old Koharu, open **Start Koharu Migrator.exe**, and click **Convert** beside the chapter.
           3. When the chapter is saved, reopen the newer Koharu and select the copy ending in **(migrated)**.
 
-          For the standalone browser version, open **Extras/Koharu-Project-Migrator.html** in desktop Edge or Chrome. Both versions process projects on your computer.
+          $browser_help Both versions process projects on your computer.
 
           **SHA256SUMS.txt** contains the hashes of the ZIP, executable, and browser edition. [View the build and test log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID).
           EOF
 
-          if release=$(gh release view "$TAG" --json isDraft,targetCommitish); then
+          if release=$(gh release view "$TAG" --json isDraft,targetCommitish,assets,body); then
             if [[ $(jq -r .isDraft <<< "$release") == false ]]; then
               gh release download "$TAG" --pattern "$archive" --dir "$RUNNER_TEMP/published"
               cmp "dist/$archive" "$RUNNER_TEMP/published/$archive"
-              echo "$TAG already contains this build."
+              if jq -e --arg name "$browser" '.assets | any(.name == $name)' <<< "$release" > /dev/null; then
+                gh release download "$TAG" --pattern "$browser" --dir "$RUNNER_TEMP/published"
+                cmp "dist/$browser" "$RUNNER_TEMP/published/$browser"
+              else
+                gh release upload "$TAG" "dist/$browser"
+              fi
+              old_help="For the standalone browser version, open **Extras/$browser** in desktop Edge or Chrome."
+              if jq -e --arg old "$old_help" '.body | contains($old)' <<< "$release" > /dev/null; then
+                jq -r --arg old "$old_help" --arg new "$browser_help" '.body | split($old) | join($new)' \
+                  <<< "$release" > "$RUNNER_TEMP/notes.md"
+                gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+              fi
               exit 0
             fi
             if [[ $(jq -r .targetCommitish <<< "$release") != "$GITHUB_SHA" ]]; then
@@ -122,5 +137,5 @@ jobs:
             gh release create "$TAG" --draft --target "$GITHUB_SHA" \
               --title "Koharu Project Migrator $TAG" --notes-file "$RUNNER_TEMP/notes.md"
           fi
-          gh release upload "$TAG" "dist/$archive" dist/SHA256SUMS.txt --clobber
+          gh release upload "$TAG" "dist/$archive" "dist/$browser" dist/SHA256SUMS.txt --clobber
           gh release edit "$TAG" --draft=false
