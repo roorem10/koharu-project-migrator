@@ -1,0 +1,47 @@
+Koharu Project Migrator
+
+Move a chapter from Koharu 0.83.x to 0.84 or 0.85 and keep editing it.
+
+Get started on Windows
+
+1. Right-click the ZIP, choose Extract All, then click Extract.
+2. Open the extracted folder and double-click Start Koharu Migrator.exe.
+   It opens in your usual browser and lists chapters from this PC's
+   Documents, OneDrive Documents, and Koharu projects folders.
+3. Close the chapter in the old Koharu. Click Convert next to its title.
+   Keep the tab open until you see the message that the chapter is saved.
+4. Open the newer Koharu and select the chapter ending in "(migrated)".
+   If Koharu was already open, reopen it to refresh the list.
+
+To finish, close the last migrator tab. The launcher exits in a few seconds.
+You can leave your other browser tabs open.
+
+If a folder is missing
+
+For a missing chapter, click Choose another folder and select the folder
+where you keep your old chapters or backups.
+
+For a missing destination, open the newer Koharu, then click Rescan project
+folders in the migrator. If more than one installation is listed, choose
+the one you use. You can also click Choose save folder and select its
+projects folder. On Windows the usual location is
+%LOCALAPPDATA%\Koharu\projects.
+
+Your original chapters stay in place. The migrator uses a numbered copy
+when needed. A failed automatic save leaves a Download .khr link.
+
+Browser option
+
+The launcher is for 64-bit Intel/AMD Windows. To use the tool without the
+launcher, open the Extras folder and open Koharu-Project-Migrator.html
+in desktop Edge or Chrome. Click Scan Documents and select a source folder.
+Choose the newer Koharu projects folder as the save location when prompted.
+
+Sharing
+
+Pass along the original ZIP. Each recipient's copy uses their own folders.
+Projects are processed on the computer. For a support post, Save shareable
+summary gives conversion counts. Screenshots and the optional detailed
+report can include chapter and page names.
+
+Independent utility for Koharu.

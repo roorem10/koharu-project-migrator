@@ -1,0 +1,126 @@
+name: Build and release Windows x64
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - release/VERSION
+      - .github/workflows/windows-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Test and build the Windows launcher
+    runs-on: windows-2025
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    env:
+      CGO_ENABLED: '0'
+      GOAMD64: v1
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.3'
+          package-manager-cache: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: '1.27.4'
+          cache: false
+      - name: Read the release version
+        id: version
+        run: |
+          tag=$(cat release/VERSION)
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Build the offline page and embed it in the launcher
+        run: node build.mjs
+      - name: Run launcher tests on Windows
+        run: go -C desktop test -v -count=1 .
+      - name: Build the Windows x64 executable
+        env:
+          GOOS: windows
+          GOARCH: amd64
+        run: go -C desktop build -buildvcs=false -trimpath -ldflags="-s -w -H=windowsgui" -o "../release/Start Koharu Migrator.exe" .
+      - name: Compare v1.0.0 with the original distribution
+        if: steps.version.outputs.tag == 'v1.0.0'
+        run: |
+          sha256sum --check <<'HASHES'
+          7a56f260af8ef0fb413f3e228e1a01e43d862d064e0674fc7e9bd58bd10d4dda  release/Start Koharu Migrator.exe
+          5a7e791ed9bb26a9cadeaca4a6a0342d312d9da434083734f40bdc93f3d2a4ae  release/Koharu-Project-Migrator.html
+          HASHES
+      - name: Package the portable ZIP and checksums
+        run: python packaging/package-windows.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows-x64
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0
+          overwrite: true
+
+  publish:
+    name: Publish the ZIP to GitHub Releases
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.build.outputs.tag }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: windows-x64
+          path: dist
+      - name: Publish the verified build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          archive="Koharu-Project-Migrator-$TAG-windows-x64.zip"
+          (cd dist && sha256sum --check --ignore-missing SHA256SUMS.txt)
+
+          cat > "$RUNNER_TEMP/notes.md" <<EOF
+          Convert Koharu 0.83.x chapters into editable projects for Koharu 0.84 or 0.85. The migrator saves a separate copy of each chapter.
+
+          1. Under **Assets**, download **$archive** and choose **Extract All**.
+          2. Close the chapter in the old Koharu, open **Start Koharu Migrator.exe**, and click **Convert** beside the chapter.
+          3. When the chapter is saved, reopen the newer Koharu and select the copy ending in **(migrated)**.
+
+          For the standalone browser version, open **Extras/Koharu-Project-Migrator.html** in desktop Edge or Chrome. Both versions process projects on your computer.
+
+          **SHA256SUMS.txt** contains the hashes of the ZIP, executable, and browser edition. [View the build and test log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID).
+          EOF
+
+          if release=$(gh release view "$TAG" --json isDraft,targetCommitish); then
+            if [[ $(jq -r .isDraft <<< "$release") == false ]]; then
+              gh release download "$TAG" --pattern "$archive" --dir "$RUNNER_TEMP/published"
+              cmp "dist/$archive" "$RUNNER_TEMP/published/$archive"
+              echo "$TAG already contains this build."
+              exit 0
+            fi
+            if [[ $(jq -r .targetCommitish <<< "$release") != "$GITHUB_SHA" ]]; then
+              echo "An existing draft for $TAG targets another revision." >&2
+              exit 1
+            fi
+          else
+            gh release create "$TAG" --draft --target "$GITHUB_SHA" \
+              --title "Koharu Project Migrator $TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
+          gh release upload "$TAG" "dist/$archive" dist/SHA256SUMS.txt --clobber
+          gh release edit "$TAG" --draft=false
