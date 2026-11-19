@@ -1,0 +1,7 @@
+* text=auto eol=lf
+/vendor/** -text
+/downloads/** -text
+/desktop/Go-LICENSE.txt -text
+/THIRD-PARTY-NOTICES.txt -text
+*.wasm binary
+*.zip binary
