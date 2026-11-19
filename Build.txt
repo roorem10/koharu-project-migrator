@@ -1,0 +1,22 @@
+Build the Koharu Project Migrator
+
+The release uses Node.js 24.22.3 and Go 1.27.4 and targets 64-bit Intel/AMD
+Windows. All inputs for the offline webpage are in this source folder.
+
+1. From this folder, run the following command with Node.js 24 or later.
+
+   node build.mjs
+
+   It creates release/Koharu-Project-Migrator.html and desktop/ui.html.
+   The launcher embeds that same HTML file.
+
+2. From this folder, open the desktop directory and run its tests.
+
+   cd desktop
+   go test .
+
+3. On 64-bit Intel/AMD Windows, build the GUI launcher.
+
+   go build -buildvcs=false -trimpath -ldflags="-s -w -H=windowsgui" -o "../release/Start Koharu Migrator.exe" .
+
+The portable Windows executable and standalone webpage are in release.

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="koharu-edition" content="standalone">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval' data:; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Koharu Project Migrator</title>
+<script id="launcher-session">
+if (document.querySelector('meta[name="koharu-edition"]').content === 'windows') {
+  let connection;
+  function connectWindow() {
+    if (!connection) connection = new EventSource(new URL('window', location.href));
+  }
+  window.addEventListener('pagehide', () => {
+    connection?.close();
+    connection = null;
+  });
+  window.addEventListener('pageshow', connectWindow);
+  connectWindow();
+}
+</script>
+<style>
+:root{color-scheme:light;font-family:"Inter","Segoe UI",system-ui,sans-serif;color:#28212a;background:#f5f2ee;--ink:#28212a;--muted:#655e65;--line:#ddd6d7;--paper:#fffefa;--accent:#69354f;--dark:#492238}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}main{width:min(900px,calc(100% - 36px));margin:clamp(32px,7vh,76px) auto 38px}header{border-bottom:2px solid var(--ink);padding-bottom:23px}.brand{display:flex;align-items:center;gap:16px}.mark{display:block;width:38px;height:41px;flex:none;position:relative;transform:rotate(-5deg);border:2px solid var(--accent);border-radius:3px;background:var(--paper);box-shadow:-4px 4px 0 var(--accent)}.mark:before,.mark:after{content:"";position:absolute;border:1.5px solid var(--accent);inset:5px 5px 19px}.mark:after{inset:24px 5px 5px 14px}.brand h1{font-size:clamp(29px,5.3vw,54px);line-height:1.07;letter-spacing:-.055em;margin:0;font-weight:700}.sub,.hint{color:var(--muted)}.sub{margin:12px 0 0;font-size:16px}h2{font-size:clamp(21px,3vw,28px);line-height:1.2;letter-spacing:-.045em;margin:0 0 6px}h3{font-size:17px;margin:0}p{margin:0 0 12px}.hint,.status{font-size:14px}.surface{margin-top:22px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:clamp(17px,3.4vw,28px)}.buttons{display:flex;gap:9px;flex-wrap:wrap;align-items:center}button,.button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 16px;border:1px solid var(--accent);border-radius:7px;background:var(--accent);color:#fff;line-height:1.3;font-family:inherit;font-size:14px;font-weight:650;text-decoration:none;cursor:pointer}button:hover,.button:hover{background:var(--dark)}button:disabled{opacity:.58;cursor:wait}button.alt,.button.alt{background:transparent;color:var(--ink);border-color:#b8acb0}.alt:hover{background:#f5efef}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,h2:focus-visible{outline:3px solid #986984;outline-offset:3px}.status{color:var(--muted);margin:12px 0 0;white-space:pre-line;overflow-wrap:anywhere}.status:empty{display:none}.error{color:#8a2739}.warning{margin:12px 0 0;white-space:pre-line;color:#653b12;background:#fff3de;padding:9px 12px;border-left:3px solid #b27131;font-size:14px}
+#catalog{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}.cat-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap}.cat-head p{margin:0}.search{width:min(100%,240px)}.search input{width:100%;padding:8px 12px;border:1px solid #aea3a8;border-radius:6px;background:white;color:var(--ink);font:inherit;font-size:14px}.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}ul{margin:12px 0 0;padding:0;list-style:none}.row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:13px 0;border-top:1px solid var(--line)}.row:last-child{padding-bottom:0}.row strong{display:block;font-size:16px;overflow-wrap:anywhere}.path{display:block;font-size:13px;color:var(--muted);overflow-wrap:anywhere}.row button{min-height:36px;min-width:88px}.tag{color:#536155;font-size:13px;font-weight:600;text-align:right}.empty{padding:16px 0 0;border-top:1px solid var(--line);margin:12px 0 0}.done{border-top:3px solid #597563}.file{overflow-wrap:anywhere;color:var(--muted);font-size:14px}dl{display:flex;flex-wrap:wrap;gap:12px 28px;margin:14px 0}dt{font-size:13px;color:var(--muted)}dd{font-size:22px;font-weight:650;margin:0;font-variant-numeric:tabular-nums}.where{margin:16px 0 0;border-top:1px solid var(--line);padding-top:12px}.where p{margin:4px 0 0}.back{margin-top:12px;border:0;background:none;color:var(--accent);padding:2px 0;min-height:32px;text-decoration:underline}.back:hover{background:none;color:var(--dark)}details{margin:15px 2px 0;color:var(--muted);font-size:14px}summary{cursor:pointer;font-weight:600;color:var(--ink)}details p{margin:8px 0}code{font: .94em ui-monospace,Consolas,monospace;overflow-wrap:anywhere}.license{white-space:pre-wrap;max-height:15em;overflow:auto;font-size:11px}[hidden]{display:none!important}
+@media(max-width:520px){main{width:calc(100% - 24px)}.mark{width:29px;height:35px}.brand{gap:13px}.row{gap:9px}.search{width:100%}.buttons button{flex:1 1 auto}}
+#delivery{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}#output{width:100%;margin:7px 0 4px;padding:8px;border:1px solid #b8acb0;border-radius:6px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}#delivery .buttons{margin-top:9px}#delivery .buttons button{min-height:33px}#transfer{overflow-wrap:anywhere}#outputNote{user-select:all}
+</style>
+</head>
+<body><main>
+<header><div class="brand"><span class="mark" aria-hidden="true"></span><h1>Koharu Project Migrator</h1></div>
+<p class="sub">Bring chapters from Koharu 0.83.x into 0.84–0.85 as editable <code>.khr</code> files.</p></header>
+<section class="surface" aria-labelledby="libraryTitle">
+<h2 id="libraryTitle" tabindex="-1">Your projects</h2>
+<p id="intro" class="hint">Choose Documents or the folder where you keep your manga. The scan includes its subfolders.</p>
+<input id="folder" type="file" webkitdirectory multiple hidden>
+<div class="buttons"><button id="scan" type="button">Scan Documents</button><button id="other" class="alt" type="button">Choose another folder</button><button id="manual" class="alt" type="button" hidden>Browse folders</button><button id="cancel" class="alt" type="button" hidden>Cancel scan</button></div>
+<p id="scanStatus" class="status" role="status"></p>
+<div id="delivery"><label for="output"><strong>Save converted projects to</strong></label>
+<select id="output"></select><p id="outputHint" class="hint"></p><div class="buttons">
+<button id="chooseOutput" type="button" class="alt" hidden>Choose save folder</button>
+<button id="allowOutput" type="button" class="alt" hidden>Allow saving</button>
+<button id="copyOutput" type="button" class="alt" hidden>Copy folder path</button></div>
+<p id="outputNote" class="status" role="status"></p></div>
+<div id="catalog" hidden>
+<div class="cat-head"><div><h3 id="rootName"></h3><p id="count" class="hint" role="status"></p></div>
+<label class="search" id="searchBox" hidden><span class="sr">Filter projects by chapter or folder</span><input type="search" id="filter" placeholder="Find a chapter or folder…" autocomplete="off"></label></div>
+<ul id="rows" aria-label="Discovered projects"></ul>
+<p id="empty" class="empty hint" hidden></p>
+</div>
+<div id="skip" class="warning" hidden></div>
+</section>
+<section id="result" class="surface done" aria-labelledby="resultTitle" hidden>
+<h2 id="resultTitle" tabindex="-1">Converted project</h2><p class="file" id="resultName"></p>
+<p id="status" class="status" role="status"></p><div id="warnings" class="warning" hidden></div>
+<div id="ready" hidden><p id="transfer" class="status" role="status"></p><dl id="counts"></dl>
+<div class="buttons"><a id="save" class="button">Download .khr</a><button id="retrySave" type="button" class="alt" hidden>Save to selected folder</button><a id="report" class="button alt">Save shareable summary</a></div>
+<details><summary>Detailed conversion report</summary><p>Includes the chapter title, page names, and review notes. Keep this copy for your own reference.</p><a id="detailReport" class="button alt">Save detailed report</a></details>
+<div class="where"><b>Open your chapter in Koharu</b><p id="openHint" class="hint">Close Koharu, copy the downloaded file into its <code>projects</code> folder, then reopen Koharu and select the chapter. On Windows, this folder is next to <code>koharu.exe</code>.</p></div></div>
+<button id="back" type="button" class="back">Back to project list</button>
+</section>
+<details><summary>Where are my projects?</summary>
+<p>Older chapters are usually in <b>Documents → Koharu</b> or <b>OneDrive → Documents → Koharu</b>. You can also scan a backup, another drive, or a single <code>.khrproj</code> folder. Newer <code>.khr</code> files in the scanned folder appear as already current. If your browser asks to “upload” a folder, the selected source files are read locally.</p>
+<p>On Windows, paste <code>%LOCALAPPDATA%\Koharu\projects</code> into File Explorer to check the usual per-user location. For a custom install, open Koharu and rescan in the Windows launcher to find its projects folder. On Linux the usual output location is <code>~/.local/share/Koharu/projects/</code>. On macOS it is <code>~/Library/Application Support/Koharu/projects/</code>.</p></details>
+<details><summary>What gets converted?</summary><p>Close the chapter in the old Koharu before converting. The migrator checks the saved data, recovers the newest intact revision, and preserves the original folder. Scans, page order, editable text, groups and paint carry over. Old page-wide cleanup stays editable as a page layer. Full-page masks are kept in the hidden <b>Legacy data</b> group. Text can wrap differently in the new editor. Provider settings are configured separately in Koharu.</p>
+<p>Keep this window open until saving finishes. Large books need enough memory to hold the finished project. The shareable summary contains counts. The detailed report lists pages and anything to review.</p></details>
+<details><summary>About and licenses</summary><p>Independent offline utility for Koharu issue #1406. Based on the 0.83.5 and 0.85.6 project formats. Includes sql.js, SQLite, noble-hashes and fflate.</p><pre class="license">__LICENSES__</pre></details>
+</main>
+<script type="importmap">__IMPORT_MAP__</script>
+<script>__SQLJS__</script>
+<script type="application/octet-stream" id="wasm">__WASM__</script>
+<script type="module">import {start} from 'app/catalog-ui'; start();</script>
+</body></html>
